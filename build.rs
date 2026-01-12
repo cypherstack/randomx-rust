@@ -108,6 +108,11 @@ fn main() {
         {
             println!("cargo:rustc-link-lib=dylib=c++");
         }
+        else if target.contains("android")
+        {
+            // Android NDK uses LLVM's libc++ (c++_shared or c++_static)
+            println!("cargo:rustc-link-lib=dylib=c++_shared");
+        }
         else if target.contains("linux")
         {
             println!("cargo:rustc-link-lib=dylib=stdc++");
