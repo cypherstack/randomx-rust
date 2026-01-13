@@ -117,6 +117,11 @@ fn main() {
         {
             println!("cargo:rustc-link-lib=dylib=stdc++");
         }
+        else if target.contains("windows")
+        {
+            // MinGW (x86_64-pc-windows-gnu) uses stdc++ like Linux
+            println!("cargo:rustc-link-lib=dylib=stdc++");
+        }
         else
         {
             unimplemented!();
