@@ -113,8 +113,10 @@ fn main() {
         }
         else if target.contains("android")
         {
-            // Android NDK uses LLVM's libc++ (c++_shared or c++_static)
-            println!("cargo:rustc-link-lib=dylib=c++_shared");
+            // The NDK's libc++, linked statically so the library needs no
+            // libc++_shared.so beside it. -bundle leaves it to the final
+            // link, where the NDK's linker finds libc++.a in its sysroot.
+            println!("cargo:rustc-link-lib=static:-bundle=c++");
         }
         else if target.contains("linux")
         {
