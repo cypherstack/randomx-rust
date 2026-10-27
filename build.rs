@@ -47,9 +47,12 @@ fn compile_cmake() {
 	let mut config = cmake::Config::new("randomx");
 	config.no_build_target(true);
 
-	// Only for Mac Silicon (Apple ARM)
+	// Only for Apple arm64: Macs, iOS devices and the arm64 simulator. The
+	// architecture stays at RandomX's default, armv8-a+crypto. "native"
+	// would take the build machine's architecture level, so the bytes would
+	// depend on that machine, and no level's defaults include the crypto
+	// extension that RandomX's hardware AES needs.
 	if target.contains("apple") && target.contains("aarch64") {
-		config.define("ARCH", "native");
 		config.define("CMAKE_OSX_ARCHITECTURES", "arm64");
 		// For iOS, set the CMAKE_SYSTEM_NAME so CMakeLists.txt can skip test executables.
 		if target.contains("ios") {
@@ -110,8 +113,10 @@ fn main() {
         }
         else if target.contains("android")
         {
-            // Android NDK uses LLVM's libc++ (c++_shared or c++_static)
-            println!("cargo:rustc-link-lib=dylib=c++_shared");
+            // The NDK's libc++, linked statically so the library needs no
+            // libc++_shared.so beside it. -bundle leaves it to the final
+            // link, where the NDK's linker finds libc++.a in its sysroot.
+            println!("cargo:rustc-link-lib=static:-bundle=c++");
         }
         else if target.contains("linux")
         {
